@@ -4,40 +4,61 @@
 
 using namespace std;
 
-struct ConvertILPToSat {
-    vector< vector<int> > A;
-    vector<int> b;
-
-    ConvertILPToSat(int n, int m) : A(n, vector<int>(m)), b(n)
-    {}
-
-    void printEquisatisfiableSatFormula() {
-        // This solution prints a simple satisfiable formula
-        // and passes about half of the tests.
-        // Change this function to solve the problem.
-        cout << "3 2" << endl;
-        cout << "1 2 0" << endl;
-        cout << "-1 -2 0" << endl;
-        cout << "1 -2 0" << endl;
-    }
-};
-
-int main() {
+int var(int i, int n, int q)
+{ // node, number of node, quotient
+    return n*q + i;
+}
+int main(){
     ios::sync_with_stdio(false);
 
     int n, m;
     cin >> n >> m;
-    ConvertILPToSat converter(n, m);
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < m; j++) {
-        cin >> converter.A[i][j];
-      }
+    
+    vector<bool> visited(n+1, false);
+    vector<vector<int>> clause;
+    for(int i=0; i<m; i++)
+    {
+        int u , v;
+        cin >> u >> v;
+        vector<int> temp;
+        temp.clear();
+        if(!visited[u]){
+            temp.push_back(var(u, n, 0));
+            temp.push_back(var(u, n, 1));
+            temp.push_back(var(u, n, 2));
+            clause.push_back(temp);
+            temp.clear();
+            visited[u] = true;
+        }
+        if(!visited[v]){
+            temp.push_back(var(v, n, 0));
+            temp.push_back(var(v, n, 1));
+            temp.push_back(var(v, n, 2));
+            clause.push_back(temp);
+            temp.clear();
+            visited[v] = true;
+        }
+        temp.push_back(-1*var(u, n, 0));
+        temp.push_back(-1*var(v, n, 0));
+        clause.push_back(temp);
+        temp.clear();
+        temp.push_back(-1*var(u, n, 1));
+        temp.push_back(-1*var(v, n, 1));
+        clause.push_back(temp);
+        temp.clear();
+        temp.push_back(-1*var(u, n, 2));
+        temp.push_back(-1*var(v, n, 2));
+        clause.push_back(temp);
+        temp.clear();
     }
-    for (int i = 0; i < n; i++) {
-      cin >> converter.b[i];
+    cout << clause.size() << " " << 3*n << endl;
+    for(auto ele : clause)
+    {
+        for(auto literal: ele)
+        {
+            cout << literal << " ";
+        }
+        cout << "0\n";
     }
-
-    converter.printEquisatisfiableSatFormula();
-
     return 0;
 }
